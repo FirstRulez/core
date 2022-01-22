@@ -439,13 +439,14 @@ async def test_services(
         MP_DOMAIN, SERVICE_TURN_OFF, {ATTR_ENTITY_ID: MAIN_ENTITY_ID}, blocking=True
     )
 
-    mock_roku.remote.assert_called_once_with("poweroff")
+    mock_roku.remote.assert_called_with("poweroff")
 
     await hass.services.async_call(
         MP_DOMAIN, SERVICE_TURN_ON, {ATTR_ENTITY_ID: MAIN_ENTITY_ID}, blocking=True
     )
 
-    mock_roku.remote.assert_called_once_with("poweron")
+    assert mock_roku.remote.call_count == 1
+    mock_roku.remote.assert_called_with("poweron")
 
     await hass.services.async_call(
         MP_DOMAIN,
@@ -454,7 +455,8 @@ async def test_services(
         blocking=True,
     )
 
-    mock_roku.remote.assert_called_once_with("play")
+    assert mock_roku.remote.call_count == 2
+    mock_roku.remote.assert_called_with("play")
 
     await hass.services.async_call(
         MP_DOMAIN,
@@ -463,7 +465,8 @@ async def test_services(
         blocking=True,
     )
 
-    mock_roku.remote.assert_called_once_with("play")
+    assert mock_roku.remote.call_count == 3
+    mock_roku.remote.assert_called_with("play")
 
     await hass.services.async_call(
         MP_DOMAIN,
@@ -472,7 +475,8 @@ async def test_services(
         blocking=True,
     )
 
-    mock_roku.remote.assert_called_once_with("play")
+    assert mock_roku.remote.call_count == 4
+    mock_roku.remote.assert_called_with("play")
 
     await hass.services.async_call(
         MP_DOMAIN,
@@ -481,7 +485,8 @@ async def test_services(
         blocking=True,
     )
 
-    mock_roku.remote.assert_called_once_with("forward")
+    assert mock_roku.remote.call_count == 5
+    mock_roku.remote.assert_called_with("forward")
 
     await hass.services.async_call(
         MP_DOMAIN,
@@ -490,7 +495,8 @@ async def test_services(
         blocking=True,
     )
 
-    mock_roku.launch.assert_called_once_with("reverse")
+    assert mock_roku.launch.call_count == 1
+    mock_roku.launch.assert_called_with("reverse")
 
     await hass.services.async_call(
         MP_DOMAIN,
@@ -503,7 +509,8 @@ async def test_services(
         blocking=True,
     )
 
-    mock_roku.launch.assert_called_once_with("11", {})
+    assert mock_roku.launch.call_count == 2
+    mock_roku.launch.assert_called_with("11", {})
 
     await hass.services.async_call(
         MP_DOMAIN,
@@ -520,7 +527,8 @@ async def test_services(
         blocking=True,
     )
 
-    mock_roku.launch.assert_called_once_with(
+    assert mock_roku.launch.call_count == 3
+    mock_roku.launch.assert_called_with(
         "291097",
         {
             "contentID": "8e06a8b7-d667-4e31-939d-f40a6dd78a88",
@@ -543,7 +551,8 @@ async def test_services(
         blocking=True,
     )
 
-    mock_roku.play_video.assert_called_once_with(
+    assert mock_roku.play_video.call_count == 1
+    mock_roku.play_video.assert_called_with(
         "https://awesome.tld/media.mp4",
         {
             "videoName": "Sent from HA",
@@ -562,7 +571,8 @@ async def test_services(
         blocking=True,
     )
 
-    mock_roku.play_video.assert_called_once_with(
+    assert mock_roku.play_video.call_count == 2
+    mock_roku.play_video.assert_called_with(
         "https://awesome.tld/api/hls/api_token/master_playlist.m3u8",
         {
             "MediaType": "hls",
@@ -576,7 +586,8 @@ async def test_services(
         blocking=True,
     )
 
-    mock_roku.remote.assert_called_once_with("home")
+    assert mock_roku.remote.call_count == 6
+    mock_roku.remote.assert_called_with("home")
 
     await hass.services.async_call(
         MP_DOMAIN,
@@ -585,7 +596,8 @@ async def test_services(
         blocking=True,
     )
 
-    mock_roku.launch.assert_called_once_with("12")
+    assert mock_roku.launch.call_count == 4
+    mock_roku.launch.assert_called_with("12")
 
     await hass.services.async_call(
         MP_DOMAIN,
@@ -594,7 +606,8 @@ async def test_services(
         blocking=True,
     )
 
-    mock_roku.launch.assert_called_once_with("12")
+    assert mock_roku.launch.call_count == 5
+    mock_roku.launch.assert_called_with("12")
 
 
 @pytest.mark.parametrize("mock_roku", ["roku/rokutv-7820x.json"], indirect=True)
