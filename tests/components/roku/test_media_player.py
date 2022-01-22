@@ -593,7 +593,13 @@ async def test_tv_services(
     mock_roku.tune.assert_called_with("55")
 
 
-async def test_media_browse(hass, init_integration, hass_ws_client):
+@pytest.mark.parametrize("mock_roku", ["roku/rokutv-7820x.json"], indirect=True)
+async def test_media_browse(
+    hass,
+    init_integration,
+    mock_roku,
+    hass_ws_client,
+):
     """Test browsing media."""
     client = await hass_ws_client(hass)
 
@@ -710,7 +716,13 @@ async def test_media_browse(hass, init_integration, hass_ws_client):
     assert not msg["success"]
 
 
-async def test_media_browse_internal(hass, init_integration, hass_ws_client):
+@pytest.mark.parametrize("mock_roku", ["roku/rokutv-7820x.json"], indirect=True)
+async def test_media_browse_internal(
+    hass,
+    init_integration,
+    mock_roku,
+    hass_ws_client,
+):
     """Test browsing media with internal url."""
     await async_process_ha_core_config(
         hass,
