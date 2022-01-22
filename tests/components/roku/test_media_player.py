@@ -495,6 +495,16 @@ async def test_services(
         blocking=True,
     )
 
+    await hass.services.async_call(
+        MP_DOMAIN,
+        SERVICE_SELECT_SOURCE,
+        {ATTR_ENTITY_ID: MAIN_ENTITY_ID, ATTR_INPUT_SOURCE: "Home"},
+        blocking=True,
+    )
+
+    assert mock_roku.remote.call_count == 6
+    mock_roku.remote.assert_called_with("home")
+
     assert mock_roku.launch.call_count == 1
     mock_roku.launch.assert_called_with("reverse")
 
@@ -582,16 +592,6 @@ async def test_services(
     await hass.services.async_call(
         MP_DOMAIN,
         SERVICE_SELECT_SOURCE,
-        {ATTR_ENTITY_ID: MAIN_ENTITY_ID, ATTR_INPUT_SOURCE: "Home"},
-        blocking=True,
-    )
-
-    assert mock_roku.remote.call_count == 6
-    mock_roku.remote.assert_called_with("home")
-
-    await hass.services.async_call(
-        MP_DOMAIN,
-        SERVICE_SELECT_SOURCE,
         {ATTR_ENTITY_ID: MAIN_ENTITY_ID, ATTR_INPUT_SOURCE: "Netflix"},
         blocking=True,
     )
@@ -621,7 +621,8 @@ async def test_tv_services(
         MP_DOMAIN, SERVICE_VOLUME_UP, {ATTR_ENTITY_ID: TV_ENTITY_ID}, blocking=True
     )
 
-    mock_roku.remote.assert_called_once_with("volume_up")
+    assert mock_roku.remote.call_count == 1
+    mock_roku.remote.assert_called_with("volume_up")
 
     await hass.services.async_call(
         MP_DOMAIN,
@@ -630,7 +631,8 @@ async def test_tv_services(
         blocking=True,
     )
 
-    mock_roku.remote.assert_called_once_with("volume_down")
+    assert mock_roku.remote.call_count == 2
+    mock_roku.remote.assert_called_with("volume_down")
 
     await hass.services.async_call(
         MP_DOMAIN,
@@ -639,6 +641,7 @@ async def test_tv_services(
         blocking=True,
     )
 
+    assert mock_roku.remote.call_count == 3
     mock_roku.remote.assert_called_once_with("volume_mute")
 
     await hass.services.async_call(
@@ -652,7 +655,8 @@ async def test_tv_services(
         blocking=True,
     )
 
-    mock_roku.tune.assert_called_once_with("55")
+    assert mock_roku.tune.call_count == 1
+    mock_roku.tune.assert_called_with("55")
 
 
 async def test_media_browse(hass, init_integration, hass_ws_client):
