@@ -429,7 +429,11 @@ async def test_tv_device_registry(
     assert reg_device.name == NAME_ROKUTV
 
 
-async def test_services(hass: HomeAssistant, init_integration: MockConfigEntry) -> None:
+async def test_services(
+    hass: HomeAssistant,
+    init_integration: MockConfigEntry,
+    mock_roku: MagicMock,
+) -> None:
     """Test the different media player services."""
     await hass.services.async_call(
         MP_DOMAIN, SERVICE_TURN_OFF, {ATTR_ENTITY_ID: MAIN_ENTITY_ID}, blocking=True
@@ -477,7 +481,7 @@ async def test_services(hass: HomeAssistant, init_integration: MockConfigEntry) 
         blocking=True,
     )
 
-    remote_mock.assert_called_once_with("forward")
+    mock_roku.remote.assert_called_once_with("forward")
 
     await hass.services.async_call(
         MP_DOMAIN,
@@ -581,7 +585,7 @@ async def test_services(hass: HomeAssistant, init_integration: MockConfigEntry) 
         blocking=True,
     )
 
-    launch_mock.assert_called_once_with("12")
+    mock_roku.launch.assert_called_once_with("12")
 
     await hass.services.async_call(
         MP_DOMAIN,
@@ -590,7 +594,7 @@ async def test_services(hass: HomeAssistant, init_integration: MockConfigEntry) 
         blocking=True,
     )
 
-    launch_mock.assert_called_once_with("12")
+    mock_roku.launch.assert_called_once_with("12")
 
 
 @pytest.mark.parametrize("mock_roku", ["roku/rokutv-7820x.json"], indirect=True)
