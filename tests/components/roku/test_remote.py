@@ -1,5 +1,5 @@
 """The tests for the Roku remote platform."""
-from unittest.mock import patch
+from unittest.mock import MagicMock
 
 from homeassistant.components.remote import (
     ATTR_COMMAND,
@@ -34,32 +34,34 @@ async def test_unique_id(
 
 
 async def test_main_services(
-    hass: HomeAssistant, init_integration: MockConfigEntry
+    hass: HomeAssistant,
+    init_integration: MockConfigEntry,
+    mock_roku: MagicMock,
 ) -> None:
     """Test platform services."""
-    with patch("homeassistant.components.roku.coordinator.Roku.remote") as remote_mock:
-        await hass.services.async_call(
-            REMOTE_DOMAIN,
-            SERVICE_TURN_OFF,
-            {ATTR_ENTITY_ID: MAIN_ENTITY_ID},
-            blocking=True,
-        )
-        remote_mock.assert_called_once_with("poweroff")
+    await hass.services.async_call(
+        REMOTE_DOMAIN,
+        SERVICE_TURN_OFF,
+        {ATTR_ENTITY_ID: MAIN_ENTITY_ID},
+        blocking=True,
+    )
+    assert mock_roku.remote.call_count == 1
+    mock_roku.remote.assert_called_with("poweroff")
 
-    with patch("homeassistant.components.roku.coordinator.Roku.remote") as remote_mock:
-        await hass.services.async_call(
-            REMOTE_DOMAIN,
-            SERVICE_TURN_ON,
-            {ATTR_ENTITY_ID: MAIN_ENTITY_ID},
-            blocking=True,
-        )
-        remote_mock.assert_called_once_with("poweron")
+    await hass.services.async_call(
+        REMOTE_DOMAIN,
+        SERVICE_TURN_ON,
+        {ATTR_ENTITY_ID: MAIN_ENTITY_ID},
+        blocking=True,
+    )
+    assert mock_roku.remote.call_count == 2
+    mock_roku.remote.assert_called_with("poweron")
 
-    with patch("homeassistant.components.roku.coordinator.Roku.remote") as remote_mock:
-        await hass.services.async_call(
-            REMOTE_DOMAIN,
-            SERVICE_SEND_COMMAND,
-            {ATTR_ENTITY_ID: MAIN_ENTITY_ID, ATTR_COMMAND: ["home"]},
-            blocking=True,
-        )
-        remote_mock.assert_called_once_with("home")
+    await hass.services.async_call(
+        REMOTE_DOMAIN,
+        SERVICE_SEND_COMMAND,
+        {ATTR_ENTITY_ID: MAIN_ENTITY_ID, ATTR_COMMAND: ["home"]},
+        blocking=True,
+    )
+    assert mock_roku.remote.call_count == 3
+    mock_roku.remote.assert_called_with("home")
