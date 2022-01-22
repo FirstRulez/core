@@ -3,7 +3,7 @@ from datetime import timedelta
 from unittest.mock import MagicMock, patch
 
 import pytest
-from rokuecp import Device as RokuDevice, RokuError
+from rokuecp import RokuError
 
 from homeassistant.components.media_player import MediaPlayerDeviceClass
 from homeassistant.components.media_player.const import (
@@ -187,9 +187,8 @@ async def test_availability(
         await hass.config_entries.async_setup(mock_config_entry.entry_id)
         await hass.async_block_till_done()
 
-    with patch(
-        "homeassistant.components.roku.coordinator.Roku.update", side_effect=RokuError
-    ), patch("homeassistant.util.dt.utcnow", return_value=future):
+    with patch("homeassistant.util.dt.utcnow", return_value=future):
+        mock_roku.update.side_effect = RokuError
         async_fire_time_changed(hass, future)
         await hass.async_block_till_done()
         assert hass.states.get(MAIN_ENTITY_ID).state == STATE_UNAVAILABLE
@@ -197,6 +196,7 @@ async def test_availability(
     future += timedelta(minutes=1)
 
     with patch("homeassistant.util.dt.utcnow", return_value=future):
+        mock_roku.update.side_effect = None
         async_fire_time_changed(hass, future)
         await hass.async_block_till_done()
         assert hass.states.get(MAIN_ENTITY_ID).state == STATE_HOME
@@ -362,30 +362,13 @@ async def test_attributes_app_media_paused(
     assert state.attributes.get(ATTR_APP_NAME) == "Pluto TV - It's Free TV"
     assert state.attributes.get(ATTR_INPUT_SOURCE) == "Pluto TV - It's Free TV"
 
-
+@pytest.mark.parametrize("mock_roku", ["roku/roku3-screensaver.json"], indirect=True)
 async def test_attributes_screensaver(
     hass: HomeAssistant,
     init_integration: MockConfigEntry,
     mock_roku: MagicMock,
 ) -> None:
     """Test attributes for app with screensaver."""
-    device: RokuDevice = mock_roku.device.return_value
-    device.update_from_dict(
-        {
-            "available": True,
-            "standby": False,
-            "app": {
-                "app": "Roku",
-                "screensaver": {
-                    "@id": "55545",
-                    "@type": "ssvr",
-                    "@version": "2.0.1",
-                    "#text": "Default screensaver",
-                },
-            },
-        }
-    )
-
     state = hass.states.get(MAIN_ENTITY_ID)
     assert state
     assert state.state == STATE_IDLE
@@ -520,7 +503,7 @@ async def test_services(
         blocking=True,
     )
 
-    assert mock_roku.launch.call_count == 2
+    assert mock_roku.launch.call_count == 1
     mock_roku.launch.assert_called_with("11", {})
 
     await hass.services.async_call(
@@ -538,7 +521,7 @@ async def test_services(
         blocking=True,
     )
 
-    assert mock_roku.launch.call_count == 3
+    assert mock_roku.launch.call_count == 2
     mock_roku.launch.assert_called_with(
         "291097",
         {
@@ -597,7 +580,7 @@ async def test_services(
         blocking=True,
     )
 
-    assert mock_roku.launch.call_count == 4
+    assert mock_roku.launch.call_count == 3
     mock_roku.launch.assert_called_with("12")
 
     await hass.services.async_call(
@@ -607,7 +590,7 @@ async def test_services(
         blocking=True,
     )
 
-    assert mock_roku.launch.call_count == 5
+    assert mock_roku.launch.call_count == 4
     mock_roku.launch.assert_called_with("12")
 
 
