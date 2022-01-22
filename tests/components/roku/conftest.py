@@ -13,6 +13,11 @@ from homeassistant.core import HomeAssistant
 from tests.common import MockConfigEntry, load_fixture
 
 
+def app_icon_url(*args, **kwargs):
+    app_id = args[0]
+    return f"http://192.168.1.160:8060/query/icon/{app_id}"
+
+
 @pytest.fixture
 def mock_config_entry() -> MockConfigEntry:
     """Return the default mocked config entry."""
@@ -45,7 +50,7 @@ def mock_roku_config_flow(
         "homeassistant.components.roku.config_flow.Roku", autospec=True
     ) as roku_mock:
         client = roku_mock.return_value
-        client.app_icon_url.return_value = f"/query/icon/{device.app.app_id}"
+        client.app_icon_url.side_effect = app_icon_url
         client.update.return_value = device
         yield client
 
@@ -62,7 +67,7 @@ def mock_roku(request: pytest.FixtureRequest) -> Generator[None, MagicMock, None
         "homeassistant.components.roku.coordinator.Roku", autospec=True
     ) as roku_mock:
         client = roku_mock.return_value
-        client.app_icon_url.return_value = f"/query/icon/{device.app.app_id}"
+        client.app_icon_url.side_effect = app_icon_url
         client.update.return_value = device
         yield client
 
