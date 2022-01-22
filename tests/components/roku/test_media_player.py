@@ -78,12 +78,6 @@ from homeassistant.helpers import device_registry as dr, entity_registry as er
 from homeassistant.util import dt as dt_util
 
 from tests.common import MockConfigEntry, async_fire_time_changed
-from tests.components.roku import (
-    MOCK_MEDIA_PAUSED,
-    MOCK_MEDIA_PLAYING,
-    NAME_ROKUTV,
-    UPNP_SERIAL,
-)
 
 MAIN_ENTITY_ID = f"{MP_DOMAIN}.my_roku_3"
 TV_ENTITY_ID = f"{MP_DOMAIN}.58_onn_roku_tv"
@@ -107,12 +101,12 @@ async def test_setup(hass: HomeAssistant, init_integration: MockConfigEntry) -> 
     assert state
     assert entry
     assert entry.original_device_class is MediaPlayerDeviceClass.RECEIVER
-    assert entry.unique_id == UPNP_SERIAL
+    assert entry.unique_id == "1GU48T017973"
 
     assert entry.device_id
     device_entry = device_registry.async_get(entry.device_id)
     assert device_entry
-    assert device_entry.identifiers == {(DOMAIN, UPNP_SERIAL)}
+    assert device_entry.identifiers == {(DOMAIN, "1GU48T017973")}
     assert device_entry.connections == {
         (dr.CONNECTION_NETWORK_MAC, "b0:a7:37:96:4d:fb"),
         (dr.CONNECTION_NETWORK_MAC, "b0:a7:37:96:4d:fa"),
@@ -317,6 +311,7 @@ async def test_attributes_app_media_paused(
     assert state.attributes.get(ATTR_APP_NAME) == "Pluto TV - It's Free TV"
     assert state.attributes.get(ATTR_INPUT_SOURCE) == "Pluto TV - It's Free TV"
 
+
 @pytest.mark.parametrize("mock_roku", ["roku/roku3-screensaver.json"], indirect=True)
 async def test_attributes_screensaver(
     hass: HomeAssistant,
@@ -364,7 +359,7 @@ async def test_tv_device_registry(
     assert reg_device.sw_version == TV_SW_VERSION
     assert reg_device.manufacturer == TV_MANUFACTURER
     assert reg_device.suggested_area == TV_LOCATION
-    assert reg_device.name == NAME_ROKUTV
+    assert reg_device.name == '58" Onn Roku TV'
 
 
 async def test_services(
