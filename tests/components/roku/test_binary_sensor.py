@@ -78,6 +78,8 @@ async def test_roku_binary_sensors(
     assert device_entry.name == "My Roku 3"
     assert device_entry.entry_type is None
     assert device_entry.sw_version == "7.5.0"
+    assert device_entry.hw_version == "4200X"
+    assert device_entry.suggested_area is None
 
 
 @pytest.mark.parametrize("mock_roku", ["roku/rokutv-7820x.json"], indirect=True)
@@ -161,3 +163,5 @@ async def test_rokutv_binary_sensors(
     assert device_entry.name == '58" Onn Roku TV'
     assert device_entry.entry_type is None
     assert device_entry.sw_version == "9.2.0"
+    assert device_entry.hw_version == "7820X"
+    assert device_entry.suggested_area == "Living room"
