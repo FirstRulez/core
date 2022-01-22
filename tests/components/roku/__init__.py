@@ -1,10 +1,6 @@
 """Tests for the Roku component."""
-import json
-
 from homeassistant.components import ssdp, zeroconf
 from homeassistant.components.ssdp import ATTR_UPNP_FRIENDLY_NAME, ATTR_UPNP_SERIAL
-
-from tests.common import load_fixture
 
 NAME = "Roku 3"
 NAME_ROKUTV = '58" Onn Roku TV'
@@ -36,6 +32,3 @@ MOCK_HOMEKIT_DISCOVERY_INFO = zeroconf.ZeroconfServiceInfo(
     },
     type="mock_type",
 )
-
-MOCK_MEDIA_PAUSED = json.loads(load_fixture("roku/media-paused.json"))
-MOCK_MEDIA_PLAYING = json.loads(load_fixture("roku/media-playing.json"))
