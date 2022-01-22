@@ -82,13 +82,6 @@ from tests.common import MockConfigEntry, async_fire_time_changed
 MAIN_ENTITY_ID = f"{MP_DOMAIN}.my_roku_3"
 TV_ENTITY_ID = f"{MP_DOMAIN}.58_onn_roku_tv"
 
-TV_HOST = "192.168.1.161"
-TV_LOCATION = "Living room"
-TV_MANUFACTURER = "Onn"
-TV_MODEL = "100005844"
-TV_SERIAL = "YN00H5555555"
-TV_SW_VERSION = "9.2.0"
-
 
 async def test_setup(hass: HomeAssistant, init_integration: MockConfigEntry) -> None:
     """Test setup with basic config."""
@@ -106,7 +99,7 @@ async def test_setup(hass: HomeAssistant, init_integration: MockConfigEntry) -> 
     assert entry.device_id
     device_entry = device_registry.async_get(entry.device_id)
     assert device_entry
-    assert device_entry.identifiers == {(DOMAIN, "1GU48T017973")}
+    assert device_entry.identifiers == {(DOMAIN, UPNP_SERIAL)}
     assert device_entry.connections == {
         (dr.CONNECTION_NETWORK_MAC, "b0:a7:37:96:4d:fb"),
         (dr.CONNECTION_NETWORK_MAC, "b0:a7:37:96:4d:fa"),
@@ -115,8 +108,9 @@ async def test_setup(hass: HomeAssistant, init_integration: MockConfigEntry) -> 
     assert device_entry.model == "Roku 3"
     assert device_entry.name == "My Roku 3"
     assert device_entry.entry_type is None
-    assert device_entry.hw_version == "4200X"
     assert device_entry.sw_version == "7.5.0"
+    assert device_entry.hw_version == "4200X"
+    assert device_entry.suggested_area is None
 
 
 @pytest.mark.parametrize("mock_roku", ["roku/roku3-idle.json"], indirect=True)
@@ -147,22 +141,23 @@ async def test_tv_setup(
     assert state
     assert entry
     assert entry.original_device_class is MediaPlayerDeviceClass.TV
-    assert entry.unique_id == TV_SERIAL
+    assert entry.unique_id == "YN00H5555555"
 
     assert entry.device_id
     device_entry = device_registry.async_get(entry.device_id)
     assert device_entry
-    assert device_entry.identifiers == {(DOMAIN, TV_SERIAL)}
+    assert device_entry.identifiers == {(DOMAIN, "YN00H5555555")}
     assert device_entry.connections == {
         (dr.CONNECTION_NETWORK_MAC, "d8:13:99:f8:b0:c6"),
         (dr.CONNECTION_NETWORK_MAC, "d4:3a:2e:07:fd:cb"),
     }
-    assert device_entry.manufacturer == TV_MANUFACTURER
-    assert device_entry.model == TV_MODEL
+    assert device_entry.manufacturer == "Onn"
+    assert device_entry.model == "100005844"
     assert device_entry.name == '58" Onn Roku TV'
     assert device_entry.entry_type is None
+    assert device_entry.sw_version == "9.2.0"
     assert device_entry.hw_version == "7820X"
-    assert device_entry.sw_version == TV_SW_VERSION
+    assert device_entry.suggested_area == "Living room"
 
 
 async def test_availability(
@@ -344,22 +339,6 @@ async def test_tv_attributes(
     assert state.attributes.get(ATTR_MEDIA_CONTENT_TYPE) == MEDIA_TYPE_CHANNEL
     assert state.attributes.get(ATTR_MEDIA_CHANNEL) == "getTV (14.3)"
     assert state.attributes.get(ATTR_MEDIA_TITLE) == "Airwolf"
-
-
-@pytest.mark.parametrize("mock_roku", ["roku/rokutv-7820x.json"], indirect=True)
-async def test_tv_device_registry(
-    hass: HomeAssistant, init_integration: MockConfigEntry
-) -> None:
-    """Test device registered for Roku TV in the device registry."""
-    device_registry = dr.async_get(hass)
-    reg_device = device_registry.async_get_device(identifiers={(DOMAIN, TV_SERIAL)})
-
-    assert reg_device
-    assert reg_device.model == TV_MODEL
-    assert reg_device.sw_version == TV_SW_VERSION
-    assert reg_device.manufacturer == TV_MANUFACTURER
-    assert reg_device.suggested_area == TV_LOCATION
-    assert reg_device.name == '58" Onn Roku TV'
 
 
 async def test_services(
