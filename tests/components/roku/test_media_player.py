@@ -125,15 +125,13 @@ async def test_setup(hass: HomeAssistant, init_integration: MockConfigEntry) -> 
     assert device_entry.sw_version == "7.5.0"
 
 
+@pytest.mark.parametrize("mock_roku", ["roku/roku3-idle.json"], indirect=True)
 async def test_idle_setup(
     hass: HomeAssistant,
     init_integration: MockConfigEntry,
     mock_roku: MagicMock,
 ) -> None:
     """Test setup with idle device."""
-    device: RokuDevice = mock_roku.device.return_value
-    device.update_from_dict({"available": True, "standby": True})
-
     state = hass.states.get(MAIN_ENTITY_ID)
     assert state
     assert state.state == STATE_STANDBY
@@ -265,26 +263,13 @@ async def test_attributes(
     assert state.attributes.get(ATTR_INPUT_SOURCE) == "Roku"
 
 
+@pytest.mark.parametrize("mock_roku", ["roku/roku3-app.json"], indirect=True)
 async def test_attributes_app(
     hass: HomeAssistant,
     init_integration: MockConfigEntry,
     mock_roku: MagicMock,
 ) -> None:
     """Test attributes for app."""
-    device: RokuDevice = mock_roku.device.return_value
-    device.update_from_dict(
-        {
-            "available": True,
-            "standby": False,
-            "app": {
-                "@id": "12",
-                "@type": "appl",
-                "@version": "4.1.218",
-                "#text": "Netflix",
-            },
-        }
-    )
-
     state = hass.states.get(MAIN_ENTITY_ID)
     assert state
     assert state.state == STATE_ON
@@ -295,28 +280,13 @@ async def test_attributes_app(
     assert state.attributes.get(ATTR_INPUT_SOURCE) == "Netflix"
 
 
+@pytest.mark.parametrize("mock_roku", ["roku/roku3-media-playing.json"], indirect=True)
 async def test_attributes_app_media_playing(
     hass: HomeAssistant,
     init_integration: MockConfigEntry,
     mock_roku: MagicMock,
 ) -> None:
     """Test attributes for app with playing media."""
-    device: RokuDevice = mock_roku.device.return_value
-    device.update_from_dict(
-        {
-            "available": True,
-            "standby": False,
-            "app": {
-                "@id": "74519",
-                "@subtype": "rsga",
-                "@type": "appl",
-                "@version": "5.2.0",
-                "#text": "Pluto TV - It's Free TV",
-            },
-            "media": MOCK_MEDIA_PLAYING,
-        }
-    )
-
     state = hass.states.get(MAIN_ENTITY_ID)
     assert state
     assert state.state == STATE_PLAYING
@@ -329,28 +299,13 @@ async def test_attributes_app_media_playing(
     assert state.attributes.get(ATTR_INPUT_SOURCE) == "Pluto TV - It's Free TV"
 
 
+@pytest.mark.parametrize("mock_roku", ["roku/roku3-media-paused.json"], indirect=True)
 async def test_attributes_app_media_paused(
     hass: HomeAssistant,
     init_integration: MockConfigEntry,
     mock_roku: MagicMock,
 ) -> None:
     """Test attributes for app with paused media."""
-    device: RokuDevice = mock_roku.device.return_value
-    device.update_from_dict(
-        {
-            "available": True,
-            "standby": False,
-            "app": {
-                "@id": "74519",
-                "@subtype": "rsga",
-                "@type": "appl",
-                "@version": "5.2.0",
-                "#text": "Pluto TV - It's Free TV",
-            },
-            "media": MOCK_MEDIA_PAUSED,
-        }
-    )
-
     state = hass.states.get(MAIN_ENTITY_ID)
     assert state
     assert state.state == STATE_PAUSED
