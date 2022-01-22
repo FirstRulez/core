@@ -14,6 +14,7 @@ from tests.common import MockConfigEntry, load_fixture
 
 
 def app_icon_url(*args, **kwargs):
+    """Get the URL to the application icon."""
     app_id = args[0]
     return f"http://192.168.1.160:8060/query/icon/{app_id}"
 
