@@ -41,8 +41,8 @@
       "@id": "55545",
       "@type": "ssvr",
       "@version": "2.0.1",
-      "#text": "Default screensaver",
-    },
+      "#text": "Default screensaver"
+    }
   },
   "apps": [  
     {
