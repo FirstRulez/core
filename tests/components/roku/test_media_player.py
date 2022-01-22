@@ -439,13 +439,14 @@ async def test_services(
         MP_DOMAIN, SERVICE_TURN_OFF, {ATTR_ENTITY_ID: MAIN_ENTITY_ID}, blocking=True
     )
 
+    assert mock_roku.remote.call_count == 1
     mock_roku.remote.assert_called_with("poweroff")
 
     await hass.services.async_call(
         MP_DOMAIN, SERVICE_TURN_ON, {ATTR_ENTITY_ID: MAIN_ENTITY_ID}, blocking=True
     )
 
-    assert mock_roku.remote.call_count == 1
+    assert mock_roku.remote.call_count == 2
     mock_roku.remote.assert_called_with("poweron")
 
     await hass.services.async_call(
@@ -455,7 +456,7 @@ async def test_services(
         blocking=True,
     )
 
-    assert mock_roku.remote.call_count == 2
+    assert mock_roku.remote.call_count == 3
     mock_roku.remote.assert_called_with("play")
 
     await hass.services.async_call(
@@ -465,7 +466,7 @@ async def test_services(
         blocking=True,
     )
 
-    assert mock_roku.remote.call_count == 3
+    assert mock_roku.remote.call_count == 4
     mock_roku.remote.assert_called_with("play")
 
     await hass.services.async_call(
@@ -475,7 +476,7 @@ async def test_services(
         blocking=True,
     )
 
-    assert mock_roku.remote.call_count == 4
+    assert mock_roku.remote.call_count == 5
     mock_roku.remote.assert_called_with("play")
 
     await hass.services.async_call(
@@ -485,7 +486,7 @@ async def test_services(
         blocking=True,
     )
 
-    assert mock_roku.remote.call_count == 5
+    assert mock_roku.remote.call_count == 6
     mock_roku.remote.assert_called_with("forward")
 
     await hass.services.async_call(
@@ -495,6 +496,9 @@ async def test_services(
         blocking=True,
     )
 
+    assert mock_roku.remote.call_count == 7
+    mock_roku.remote.assert_called_with("reverse")
+
     await hass.services.async_call(
         MP_DOMAIN,
         SERVICE_SELECT_SOURCE,
@@ -502,11 +506,8 @@ async def test_services(
         blocking=True,
     )
 
-    assert mock_roku.remote.call_count == 6
+    assert mock_roku.remote.call_count == 8
     mock_roku.remote.assert_called_with("home")
-
-    assert mock_roku.launch.call_count == 1
-    mock_roku.launch.assert_called_with("reverse")
 
     await hass.services.async_call(
         MP_DOMAIN,
@@ -642,7 +643,7 @@ async def test_tv_services(
     )
 
     assert mock_roku.remote.call_count == 3
-    mock_roku.remote.assert_called_once_with("volume_mute")
+    mock_roku.remote.assert_called_with("volume_mute")
 
     await hass.services.async_call(
         MP_DOMAIN,
